@@ -43,12 +43,11 @@ class FileServer {
             *
             *     GET /path/to/file HTTP/1.1
             */
-
             val inp = sockObj.getInputStream().bufferedReader()
             val req = inp.readLine().trim().split("\\s+".toRegex())
-
-            val text = fs.readFile(VPath(req[1]))
-
+            val op = req[0]
+            val version = req[2]
+            val path = fs.readFile(VPath(req[1]))
 
             /*
              * TODO 3) Using the parsed path to the target file, construct an
@@ -70,9 +69,15 @@ class FileServer {
              *
              * Don't forget to close the output stream.
              */
-
-            val code = if (text == null) "404 Not Found" else "200 OK"
-
+            val code = if (path.isNullOrEmpty()) "404 Not Found" else "200 OK"
+            val response = "$version $code\r\n" +
+                    "Server: FileServer\r\n" +
+                    "\r\n" +
+                    "$path\r\n"
+            val output = sockObj.getOutputStream()
+            output.write(response.toByteArray())
+            output.flush()
+            socket.close()
         }
     }
 }
