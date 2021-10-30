@@ -1,7 +1,9 @@
 import ru.sber.filesystem.VFilesystem
 import ru.sber.filesystem.VPath
 import java.io.IOException
+import java.io.PrintWriter
 import java.net.ServerSocket
+import java.net.Socket
 
 /**
  * A basic and very limited implementation of a file server that responds to GET
@@ -31,7 +33,6 @@ class FileServer {
 
 
             // TODO 1) Use socket.accept to get a Socket object
-            val sockObj = socket.accept()
 
 
             /*
@@ -43,11 +44,7 @@ class FileServer {
             *
             *     GET /path/to/file HTTP/1.1
             */
-            val inp = sockObj.getInputStream().bufferedReader()
-            val req = inp.readLine().trim().split("\\s+".toRegex())
-            val op = req[0]
-            val version = req[2]
-            val path = fs.readFile(VPath(req[1]))
+
 
             /*
              * TODO 3) Using the parsed path to the target file, construct an
@@ -69,15 +66,26 @@ class FileServer {
              *
              * Don't forget to close the output stream.
              */
-            val code = if (path.isNullOrEmpty()) "404 Not Found" else "200 OK"
-            val response = "$version $code\r\n" +
+
+            val sockObj = socket.accept()
+
+            val req = sockObj.getInputStream()
+                .bufferedReader()
+                .readLine()
+                .trim()
+                .split("\\s+".toRegex())
+            val content = fs.readFile(VPath(req[1]))
+
+            val code = if (content.isNullOrEmpty()) "404 Not Found" else "200 OK"
+            val path = req[2]
+            val response = "$path ${code}\r\n" +
                     "Server: FileServer\r\n" +
-                    "\r\n" +
-                    "$path\r\n"
-            val output = sockObj.getOutputStream()
-            output.write(response.toByteArray())
-            output.flush()
-            socket.close()
+                    "\r\n${content}"
+            val writer = PrintWriter(sockObj.getOutputStream())
+            writer.println(response)
+            writer.flush()
+            sockObj.close()
         }
     }
+
 }
