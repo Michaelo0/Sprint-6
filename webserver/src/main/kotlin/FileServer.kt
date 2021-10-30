@@ -33,6 +33,7 @@ class FileServer {
 
 
             // TODO 1) Use socket.accept to get a Socket object
+            val sockObj = socket.accept()
 
 
             /*
@@ -45,7 +46,12 @@ class FileServer {
             *     GET /path/to/file HTTP/1.1
             */
 
-
+            val req = sockObj.getInputStream()
+                .bufferedReader()
+                .readLine()
+                .trim()
+                .split("\\s+".toRegex())
+            val content = fs.readFile(VPath(req[1]))
             /*
              * TODO 3) Using the parsed path to the target file, construct an
              * HTTP reply and write it to Socket.getOutputStream(). If the file
@@ -66,15 +72,6 @@ class FileServer {
              *
              * Don't forget to close the output stream.
              */
-
-            val sockObj = socket.accept()
-
-            val req = sockObj.getInputStream()
-                .bufferedReader()
-                .readLine()
-                .trim()
-                .split("\\s+".toRegex())
-            val content = fs.readFile(VPath(req[1]))
 
             val code = if (content.isNullOrEmpty()) "404 Not Found" else "200 OK"
             val path = req[2]
