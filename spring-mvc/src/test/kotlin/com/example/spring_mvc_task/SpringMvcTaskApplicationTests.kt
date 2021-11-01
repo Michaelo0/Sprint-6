@@ -26,7 +26,7 @@ class SpringMvcTaskApplicationTests {
     @Test
     fun addTest() {
         mock.perform(post("/app/add")
-            .param("name", "Eduard")
+            .param("name", "Mike")
             .param("address", "Moscow")
             .cookie(Cookie("Auth", Instant.now().toEpochMilli().toString())))
             .andExpect(status().isOk)
@@ -44,7 +44,7 @@ class SpringMvcTaskApplicationTests {
     @Test
     fun editTest() {
         mock.perform(post("/app/0/edit")
-            .param("name", "Eduard")
+            .param("name", "Mike")
             .param("address", "Moscow")
             .cookie(Cookie("Auth", Instant.now().toEpochMilli().toString())))
             .andExpect(status().isOk)

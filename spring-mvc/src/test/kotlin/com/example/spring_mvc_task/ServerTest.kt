@@ -25,7 +25,7 @@ internal class ServerTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 
-    val jsonData = """{"name" : "Eduard", "address" : "Moscow"}"""
+    val jsonData = """{"name" : "Mike", "address" : "Moscow"}"""
 
     @Test
     fun getListOfRecords() {
