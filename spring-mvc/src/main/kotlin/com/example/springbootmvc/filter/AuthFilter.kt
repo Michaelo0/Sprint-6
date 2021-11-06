@@ -23,6 +23,6 @@ class AuthFilter : HttpFilter() {
                 }
             }
         }
-        response.sendRedirect("/login")
+        response.sendRedirect("/auth")
     }
 }
